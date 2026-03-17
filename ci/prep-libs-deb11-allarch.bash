@@ -8,10 +8,15 @@ sudo apt-get -o Acquire::ForceIPv4=true update
 sudo apt-get -o Acquire::ForceIPv4=true install gperf cmake g++ git zlib1g-dev libssl-dev wget -y --quiet
 [[ $? -eq 0 ]] || exit 255
 
-[[ -d ../3rd/tdlib/.git ]] || $PXY_FRONTEND git clone --depth=1000 https://github.com/tdlib/td ../3rd/tdlib
+TD_COMMIT=$(cat ../dev/pick-src-tdlib)
+
+[[ -d ../3rd/tdlib/.git ]] || $PXY_FRONTEND git clone --depth=1 https://github.com/tdlib/td ../3rd/tdlib
 [[ $? -eq 0 ]] || exit 255
 
-git --git-dir=../3rd/tdlib/.git --work-tree=../3rd/tdlib reset --hard $(cat ../dev/pick-src-tdlib)
+git --git-dir=../3rd/tdlib/.git --work-tree=../3rd/tdlib fetch origin "$TD_COMMIT"
+[[ $? -eq 0 ]] || exit 255
+
+git --git-dir=../3rd/tdlib/.git --work-tree=../3rd/tdlib reset --hard "$TD_COMMIT"
 [[ $? -eq 0 ]] || exit 255
 
 # ------------------------------ toml ------------------------------

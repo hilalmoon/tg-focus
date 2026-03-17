@@ -8,8 +8,6 @@ jobs:
     if: contains(github.event.head_commit.message, 'build-linux-aarch64') == true
     runs-on: ubuntu-24.04-arm
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
       - run: sleep 3s
       - run: nproc
       - run: free -h
@@ -21,7 +19,7 @@ jobs:
       - run: buildah run debian-working-container -- cat /etc/os-release
       - run: buildah run debian-working-container -- apt-get update
       - run: buildah run debian-working-container -- apt-get install -y sudo git bash
-      - run: buildah run debian-working-container -- git clone https://github.com/micl2e2/tg-focus
+      - run: buildah run debian-working-container -- bash -c "git clone https://github.com/${GITHUB_REPOSITORY} tg-focus"
       - run: buildah run debian-working-container -- bash -c "cd tg-focus && bash ci/prep-libs-deb11-aarch64.bash"
       - run: df -h
       - run: buildah run debian-working-container -- bash -c "cd tg-focus && bash ci/prep-toolc-deb11-aarch64.bash"

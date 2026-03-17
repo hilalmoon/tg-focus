@@ -3,6 +3,8 @@ set -x
 sudo apt-get -o Acquire::ForceIPv4=true update
 [[ $? -eq 0 ]] || exit 255
 
+WORKDIR=$(pwd)
+
 # ----------------------------- tdlib -----------------------------
 
 sudo apt-get -o Acquire::ForceIPv4=true install gperf cmake g++ git zlib1g-dev libssl-dev wget -y --quiet
@@ -10,21 +12,23 @@ sudo apt-get -o Acquire::ForceIPv4=true install gperf cmake g++ git zlib1g-dev l
 
 TD_COMMIT=$(cat ../dev/pick-src-tdlib)
 
-[[ -d ../3rd/tdlib/.git ]] || $PXY_FRONTEND git clone --depth=1 https://github.com/tdlib/td ../3rd/tdlib
+[[ -d $WORKDIR/tdlib/.git ]] || $PXY_FRONTEND git clone --depth=1 https://github.com/tdlib/td $WORKDIR/tdlib
 [[ $? -eq 0 ]] || exit 255
 
-git --git-dir=../3rd/tdlib/.git --work-tree=../3rd/tdlib fetch origin "$TD_COMMIT"
+git --git-dir=$WORKDIR/tdlib/.git --work-tree=$WORKDIR/tdlib fetch origin "$TD_COMMIT"
 [[ $? -eq 0 ]] || exit 255
 
-git --git-dir=../3rd/tdlib/.git --work-tree=../3rd/tdlib reset --hard "$TD_COMMIT"
+git --git-dir=$WORKDIR/tdlib/.git --work-tree=$WORKDIR/tdlib reset --hard "$TD_COMMIT"
 [[ $? -eq 0 ]] || exit 255
+
+ln -sfn $WORKDIR/tdlib tdlib
 
 # ------------------------------ toml ------------------------------
 
-[[ -d ../3rd/toml11/.git ]] || $PXY_FRONTEND git clone --depth=1000 https://github.com/ToruNiina/toml11 ../3rd/toml11
+[[ -d $WORKDIR/toml11/.git ]] || $PXY_FRONTEND git clone --depth=1000 https://github.com/ToruNiina/toml11 $WORKDIR/toml11
 [[ $? -eq 0 ]] || exit 255
 
-git --git-dir=../3rd/toml11/.git --work-tree=../3rd/toml11 reset --hard $(cat ../dev/pick-src-toml11)
+git --git-dir=$WORKDIR/toml11/.git --work-tree=$WORKDIR/toml11 reset --hard $(cat ../dev/pick-src-toml11)
 [[ $? -eq 0 ]] || exit 255
 
 # ---------------------------- tgfocus ----------------------------
